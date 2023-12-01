@@ -6,15 +6,19 @@ import { FormspreeForm } from "components/FormspreeForm";
 import { Gallery } from "components/Gallery";
 import { Heading } from "components/Heading";
 import { Paragraph } from "components/Paragraph";
-import { PostTitle } from "components/PostTitle";
 import { PropertyFeatures } from "components/PropertyFeatures";
 import { PropertySearch } from "components/PropertySearch";
 import { TickItem } from "components/TickItem";
 import Image from "next/image";
 import { theme } from "theme";
+import { getBlockStyling } from "@wp-block-tools/styles";
 
 export const BlockRenderer = ({ blocks }) => {
   return blocks.map((block) => {
+    const { styles, classes } = getBlockStyling(block, {
+      styleFormat: "object",
+    });
+    console.log({ styles, classes });
     switch (block.name) {
       case "acf/propertyfeatures": {
         return (
@@ -73,9 +77,12 @@ export const BlockRenderer = ({ blocks }) => {
               theme[block.attributes.textColor] ||
               block.attributes.style?.color?.text
             }
+            classNames={classes}
+            styles={styles}
           />
         );
       }
+      case "core/post-title":
       case "core/heading": {
         return (
           <Heading
@@ -86,20 +93,10 @@ export const BlockRenderer = ({ blocks }) => {
           />
         );
       }
-      case "core/post-title": {
-        return (
-          <PostTitle
-            key={block.id}
-            level={block.attributes.level}
-            textAlign={block.attributes.textAlign}
-          />
-        );
-      }
       case "acf/propertysearch": {
         return <PropertySearch key={block.id} />;
       }
       case "core/cover": {
-        console.log("COVER BLOCK: ", block);
         return (
           <Cover key={block.id} background={block.attributes.url}>
             <BlockRenderer blocks={block.innerBlocks} />
@@ -107,7 +104,6 @@ export const BlockRenderer = ({ blocks }) => {
         );
       }
       case "core/columns": {
-        console.log("COLUMNS: ", block.attributes);
         return (
           <Columns
             key={block.id}
